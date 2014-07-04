@@ -698,6 +698,13 @@ if(!String.prototype.formatNum) {
 		this.options.onAfterViewLoad.call(this, this.options.view);
 	};
 
+	Calendar.prototype.changeDate = function(date) {
+		var to = $.extend({}, this.options.position);
+		to.start.setTime(new Date(date).getTime());
+		this.options.day = to.start.getFullYear() + '-' + to.start.getMonthFormatted() + '-' + to.start.getDateFormatted();
+		this.view();
+	};
+
 	Calendar.prototype.navigate = function(where, next) {
 		var to = $.extend({}, this.options.position);
 		if(where == 'next') {
@@ -732,8 +739,7 @@ if(!String.prototype.formatNum) {
 			}
 		} else if(where == 'today') {
 			to.start.setTime(new Date().getTime());
-		}
-		else {
+		}  else {
 			$.error(this.locale.error_where.format(where))
 		}
 		this.options.day = to.start.getFullYear() + '-' + to.start.getMonthFormatted() + '-' + to.start.getDateFormatted();
@@ -1082,11 +1088,15 @@ if(!String.prototype.formatNum) {
 				var day = (child.hasClass('cal-month-first-row') ? 1 : $('[data-cal-date]', child).text());
 				p.setDate(parseInt(day));
 				day = (day < 10 ? '0' + day : day);
-				week.html(self.locale.week.format(p.getWeek()));
-				week.attr('data-cal-week', start + day).show().appendTo(child);
+				if(!self.context.is("[data-hide-week-tooltip]"))
+				{
+					week.html(self.locale.week.format(p.getWeek()));
+					week.attr('data-cal-week', start + day).show().appendTo(child);
+				}
 			})
 			.on('mouseleave', function() {
-				week.hide();
+				if(!self.context.is("[data-hide-week-tooltip]"))
+					week.hide();
 			})
 		;
 
